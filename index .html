@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กระดาษคำตอบนายสิบตำรวจ ชุด 23 (ตรวจ Real-Time)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #f0f2f5; 
+            color: #333; 
+            margin: 0; 
+            padding: 20px; 
+            padding-bottom: 120px; 
+        }
+        .container { max-width: 1000px; margin: auto; }
+        h1 { text-align: center; color: #004b87; margin-bottom: 30px; }
+        
+        .subject-section { margin-bottom: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden; background: #fff; }
+        .subject-title { font-size: 1.2em; font-weight: bold; padding: 15px 20px; background-color: #004b87; color: white; }
+        .subject-body { padding: 20px; }
+        
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 15px; 
+        }
+        
+        .question { 
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #e0e0e0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .q-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
+        .q-num { font-weight: bold; font-size: 1.1em; color: #333; }
+        .feedback-icon { font-size: 0.9em; font-weight: bold; }
+        
+        .options { display: flex; gap: 8px; justify-content: space-between; }
+        .options label { 
+            flex: 1; text-align: center; padding: 10px 0; border-radius: 6px; border: 1px solid #ccc; 
+            cursor: pointer; background: #fafafa; transition: 0.2s all; font-size: 1.1em; font-weight: 600;
+        }
+        .options label:hover:not(.disabled) { background-color: #e3f2fd; border-color: #2196f3; color: #004b87; }
+        .options input { display: none; }
+        
+        .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .disabled { cursor: not-allowed !important; opacity: 0.8; pointer-events: none; }
+        
+        .scoreboard { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 15px 0; display: flex; 
+            justify-content: space-around; align-items: center; z-index: 1000; font-size: 1.1em; 
+            font-weight: bold; border-top: 3px solid #004b87;
+        }
+        .score-val { color: #d32f2f; font-size: 1.3em; }
+        .score-green { color: #2e7d32; font-size: 1.3em; }
+        .btn-details { 
+            padding: 10px 20px; background: #004b87; color: #fff; border: none; 
+            border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: bold;
+            font-family: 'Sarabun', sans-serif; transition: 0.2s;
+        }
+        .btn-details:hover { background: #003366; }
+
+        #scoreModal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-content h3 { margin-top: 0; color: #004b87; border-bottom: 2px solid #eee; padding-bottom: 10px; text-align: center; }
+        .modal-content p { display: flex; justify-content: space-between; margin: 10px 0; font-size: 1.1em; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .close-btn { display: block; width: 100%; padding: 10px; background: #d32f2f; color: white; text-align: center; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer; font-size: 1.1em; font-family: 'Sarabun', sans-serif;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>กระดาษคำตอบนายสิบตำรวจ ชุด 23 (ตรวจ Real-Time)</h1>
+
+    <div class="subject-section">
+        <div class="subject-title">ความสามารถทั่วไป (ข้อ 1 - 20)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-1"></div></div>
+    </div>
+
+    <div class="subject-section">
+        <div class="subject-title">ภาษาไทย (ข้อ 21 - 40)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-2"></div></div>
+    </div>
+
+    <div class="subject-section">
+        <div class="subject-title">ภาษาอังกฤษ (ข้อ 41 - 55)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-3"></div></div>
+    </div>
+
+    <div class="subject-section">
+        <div class="subject-title">คอมพิวเตอร์และเทคโนโลยีสารสนเทศ (ข้อ 56 - 95)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-4"></div></div>
+    </div>
+
+    <div class="subject-section">
+        <div class="subject-title">กฎหมายและสังคม (ข้อ 96 - 120)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-5"></div></div>
+    </div>
+
+    <div class="subject-section">
+        <div class="subject-title">ระเบียบงานสารบรรณ (ข้อ 121 - 150)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-6"></div></div>
+    </div>
+</div>
+
+<div class="scoreboard">
+    <div>ทำไปแล้ว: <span id="lblAnswered" class="score-val">0</span> / 150 ข้อ</div>
+    <div>คะแนนรวม: <span id="lblTotal" class="score-green">0</span> คะแนน</div>
+    <button class="btn-details" onclick="showScoreDetails()">ดูคะแนนแยกวิชา</button>
+</div>
+
+<div id="scoreModal">
+    <div class="modal-content">
+        <h3>สรุปคะแนนแยกตามรายวิชา</h3>
+        <div id="modalBody"></div>
+        <button class="close-btn" onclick="closeModal()">ปิดหน้าต่าง</button>
+    </div>
+</div>
+
+<script>
+    // เฉลย Pre-Test ชุด 23 อ้างอิงจากไฟล์ PDF
+    const answerKey = {
+        1:'ข', 2:'ข', 3:'ค', 4:'ง', 5:'ข', 6:'ข', 7:'ง', 8:'ก', 9:'ข', 10:'ก',
+        11:'ค', 12:'ข', 13:'ก', 14:'ข', 15:'ข', 16:'ค', 17:'ค', 18:'ข', 19:'ข', 20:'ก',
+        21:'ง', 22:'ข', 23:'ข', 24:'ข', 25:'ค', 26:'ค', 27:'ก', 28:'ก', 29:'ก', 30:'ค',
+        31:'ก', 32:'ก', 33:'ค', 34:'ก', 35:'ข', 36:'ค', 37:'ข', 38:'ค', 39:'ก', 40:'ข',
+        41:'ข', 42:'ค', 43:'ค', 44:'ข', 45:'ข', 46:'ก', 47:'ข', 48:'ค', 49:'ข', 50:'ข',
+        51:'ข', 52:'ข', 53:'ค', 54:'ข', 55:'ข',
+        56:'ค', 57:'ค', 58:'ข', 59:'ข', 60:'ค', 61:'ข', 62:'ค', 63:'ค', 64:'ค', 65:'ค',
+        66:'ข', 67:'ก', 68:'ง', 69:'ค', 70:'ง', 71:'ก', 72:'ค', 73:'ค', 74:'ค', 75:'ก',
+        76:'ข', 77:'ค', 78:'ข', 79:'ข', 80:'ข', 81:'ค', 82:'ข', 83:'ข', 84:'ค', 85:'ข',
+        86:'ค', 87:'ค', 88:'ค', 89:'ค', 90:'ค', 91:'ค', 92:'ค', 93:'ข', 94:'ค', 95:'ค',
+        96:'ค', 97:'ข', 98:'ค', 99:'ข', 100:'ข', 101:'ก', 102:'ค', 103:'ข', 104:'ข', 105:'ข',
+        106:'ค', 107:'ค', 108:'ก', 109:'ข', 110:'ข', 111:'ข', 112:'ข', 113:'ค', 114:'ข', 115:'ข',
+        116:'ค', 117:'ข', 118:'ค', 119:'ค', 120:'ค',
+        121:'ก', 122:'ข', 123:'ง', 124:'ค', 125:'ก', 126:'ก', 127:'ค', 128:'ข', 129:'ก', 130:'ค',
+        131:'ค', 132:'ก', 133:'ข', 134:'ค', 135:'ก', 136:'ง', 137:'ข', 138:'ก', 139:'ค', 140:'ข',
+        141:'ค', 142:'ก', 143:'ง', 144:'ค', 145:'ข', 146:'ข', 147:'ก', 148:'ค', 149:'ค', 150:'ก'
+    };
+
+    const ranges = [
+        { id: 'math', start: 1, end: 20, container: 'sub-1', name: 'ความสามารถทั่วไป' },
+        { id: 'thai', start: 21, end: 40, container: 'sub-2', name: 'ภาษาไทย' },
+        { id: 'eng', start: 41, end: 55, container: 'sub-3', name: 'ภาษาอังกฤษ' },
+        { id: 'com', start: 56, end: 95, container: 'sub-4', name: 'คอมพิวเตอร์และเทคโนโลยีฯ' },
+        { id: 'law', start: 96, end: 120, container: 'sub-5', name: 'กฎหมายและสังคม' },
+        { id: 'admin', start: 121, end: 150, container: 'sub-6', name: 'ระเบียบงานสารบรรณ' }
+    ];
+
+    let totalScore = 0;
+    let totalAnswered = 0;
+    let subjectScores = { math: 0, thai: 0, eng: 0, com: 0, law: 0, admin: 0 };
+
+    ranges.forEach(range => {
+        let box = document.getElementById(range.container);
+        let html = '';
+        for (let i = range.start; i <= range.end; i++) {
+            html += `
+                <div class="question" id="qdiv_${i}">
+                    <div class="q-header">
+                        <span class="q-num">ข้อ ${i}</span>
+                        <span class="feedback-icon" id="feedback_${i}"></span>
+                    </div>
+                    <div class="options">
+                        <label id="lbl_${i}_ก" onclick="checkAnswer(${i}, 'ก', '${range.id}')">ก</label>
+                        <label id="lbl_${i}_ข" onclick="checkAnswer(${i}, 'ข', '${range.id}')">ข</label>
+                        <label id="lbl_${i}_ค" onclick="checkAnswer(${i}, 'ค', '${range.id}')">ค</label>
+                        <label id="lbl_${i}_ง" onclick="checkAnswer(${i}, 'ง', '${range.id}')">ง</label>
+                    </div>
+                </div>`;
+        }
+        box.innerHTML = html;
+    });
+
+    window.checkAnswer = function(qNum, selectedChoice, subjectId) {
+        let qDiv = document.getElementById(`qdiv_${qNum}`);
+        if (qDiv.classList.contains('answered')) return;
+        qDiv.classList.add('answered');
+
+        let correctChoice = answerKey[qNum];
+        let feedbackSpan = document.getElementById(`feedback_${qNum}`);
+        let selectedLabel = document.getElementById(`lbl_${qNum}_${selectedChoice}`);
+        let correctLabel = document.getElementById(`lbl_${qNum}_${correctChoice}`);
+
+        ['ก', 'ข', 'ค', 'ง'].forEach(c => {
+            document.getElementById(`lbl_${qNum}_${c}`).classList.add('disabled');
+        });
+
+        totalAnswered++;
+
+        if (selectedChoice === correctChoice) {
+            selectedLabel.classList.add('correct');
+            feedbackSpan.innerHTML = '<span style="color:#2e7d32;">✔️ ถูกต้อง</span>';
+            totalScore++;
+            subjectScores[subjectId]++;
+        } else {
+            selectedLabel.classList.add('incorrect');
+            correctLabel.classList.add('correct');
+            feedbackSpan.innerHTML = `<span style="color:#d32f2f;">❌ ผิด (เฉลย ${correctChoice})</span>`;
+        }
+
+        document.getElementById('lblAnswered').innerText = totalAnswered;
+        document.getElementById('lblTotal').innerText = totalScore;
+    };
+
+    window.showScoreDetails = function() {
+        let modalBody = document.getElementById('modalBody');
+        let detailsHtml = '';
+        ranges.forEach(r => {
+            let max = r.end - r.start + 1;
+            detailsHtml += `<p><span>${r.name}</span> <b>${subjectScores[r.id]} / ${max}</b></p>`;
+        });
+        modalBody.innerHTML = detailsHtml;
+        document.getElementById('scoreModal').style.display = 'flex';
+    };
+
+    window.closeModal = function() {
+        document.getElementById('scoreModal').style.display = 'none';
+    };
+</script>
+
+</body>
+</html>
